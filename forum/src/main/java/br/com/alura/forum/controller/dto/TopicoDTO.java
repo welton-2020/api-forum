@@ -1,9 +1,8 @@
 package br.com.alura.forum.controller.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 import br.com.alura.forum.modelo.Topico;
 
@@ -40,9 +39,9 @@ public class TopicoDTO {
 
 	
 	// AQUI ESTOU RECEBENDO UMA LISTA DE TOPICOS E CONVERTENDO EM UMA LISTA DE TOPICODTO UTILIZANDO API DE STREAM DO JAVA 8
-	public static List<TopicoDTO> converter(List<Topico> topicos) {
+	public static Page<TopicoDTO> converter(Page<Topico> topicos) {
 		// TODO Auto-generated method stub
-		return topicos.stream().map(TopicoDTO::new).collect(Collectors.toList());
+		return topicos.map(TopicoDTO::new);
 	}
 	
 	
