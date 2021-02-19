@@ -1,15 +1,15 @@
 package br.com.alura.forum.controller;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
-
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import br.com.alura.forum.controller.dto.DetalhesDoTopicoDTO;
 import br.com.alura.forum.controller.dto.TopicoDTO;
 import br.com.alura.forum.controller.form.AtualizacaoTopicoForm;
@@ -42,11 +41,12 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 	
 	//UTILIZANDO PAGINAÇÃO 
+	// PARA A UTILIZAÇÃO DO PAGEABLE AQUI DEVEMOS ATIVAR O MODULO @EnableSpringDataWebSupport NA CLASSE PRINCIPAL ForumApplication.java / @PageableDefault para deixar como padrão a busca caso não seja passado os parametros	*/
+	
 	@GetMapping
-	public Page<TopicoDTO> listar (@RequestParam(required = false) String nomeCurso, @RequestParam int pagina, @RequestParam int qtd){
-				
-		Pageable paginacao = PageRequest.of(pagina,qtd);
-				
+	public Page<TopicoDTO> listar (@RequestParam(required = false) String nomeCurso, @PageableDefault(sort="id", direction= Direction.DESC, page = 0, size = 10) Pageable paginacao ){
+	
+					
 		if(nomeCurso == null) {
 			Page<Topico> topicos = topicoRepository.findAll(paginacao);
 			return TopicoDTO.converter(topicos);
@@ -60,8 +60,8 @@ public class TopicosController {
 	
 	// TopicoForm É UM DTO DE ENTRADA DE DADOS.
 	// CADASTRANDO UM NOVO TOPICO
-		@PostMapping
-		@Transactional
+	@PostMapping
+	@Transactional
 	public ResponseEntity<TopicoDTO> cadastrar(@RequestBody @Valid TopicoFom form, UriComponentsBuilder uriBuilder) {
 		Topico topico = form.converter(cursoRepository);
 		topicoRepository.save(topico);
