@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +45,9 @@ public class TopicosController {
 	// PARA A UTILIZAÇÃO DO PAGEABLE AQUI DEVEMOS ATIVAR O MODULO @EnableSpringDataWebSupport NA CLASSE PRINCIPAL ForumApplication.java / @PageableDefault para deixar como padrão a busca caso não seja passado os parametros	*/
 	
 	@GetMapping
-	public Page<TopicoDTO> listar (@RequestParam(required = false) String nomeCurso, @PageableDefault(sort="id", direction= Direction.DESC, page = 0, size = 10) Pageable paginacao ){
+	@Cacheable(value = "listaDeTopicos")
+	public Page<TopicoDTO> listar (@RequestParam(required = false) String nomeCurso, 
+			@PageableDefault(sort="id", direction= Direction.DESC, page = 0, size = 10) Pageable paginacao ){
 	
 					
 		if(nomeCurso == null) {

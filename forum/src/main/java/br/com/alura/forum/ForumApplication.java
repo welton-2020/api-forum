@@ -2,10 +2,12 @@ package br.com.alura.forum;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @SpringBootApplication
-@EnableSpringDataWebSupport     // ATIVADO PARA UTILIZAÇÃO DO Pageable
+@EnableSpringDataWebSupport     // ATIVADO PARA UTILIZAÇÃO DO PAGEABLE
+@EnableCaching                  // ATIVADO PARA UTILIZAÇÃO DE CASH NA APPI
 public class ForumApplication {
 
 	public static void main(String[] args) {
