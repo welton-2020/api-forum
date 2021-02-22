@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -65,6 +66,7 @@ public class TopicosController {
 	// CADASTRANDO UM NOVO TOPICO
 	@PostMapping
 	@Transactional
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)	// @CACHEEVICT É UTILIZADO PARA INFORMAR AO SPRING INVALIDE OU LIMPE UM DETERMINADO CACHE 							
 	public ResponseEntity<TopicoDTO> cadastrar(@RequestBody @Valid TopicoFom form, UriComponentsBuilder uriBuilder) {
 		Topico topico = form.converter(cursoRepository);
 		topicoRepository.save(topico);
@@ -72,6 +74,8 @@ public class TopicosController {
 		URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
 		return ResponseEntity.created(uri).body(new TopicoDTO(topico));
 	}
+	
+	
 		
 	// DETALHANDO OS DADOS DO TOPICO
 	@GetMapping("/{id}")
@@ -87,6 +91,7 @@ public class TopicosController {
 	// ATUALIZANDO OS DADOS DO TOPICO
 		@PutMapping("/{id}")	
 		@Transactional        // -> uTILIZADO O @TRANSACTIONAL PARA O SPRING EFETUAR O UPDATE NO BANCO
+		@CacheEvict(value = "listaDeTopicos", allEntries = true)
 		public ResponseEntity<TopicoDTO>  atualizar( @PathVariable Long id, @RequestBody @Valid  AtualizacaoTopicoForm  form) {
 			Optional<Topico> optional = topicoRepository.findById(id);
 			if(optional.isPresent()) {
@@ -101,6 +106,7 @@ public class TopicosController {
 		// DELETANDO OS DADOS DO TOPICO	
 		@DeleteMapping("/{id}")
 		@Transactional
+		@CacheEvict(value = "listaDeTopicos", allEntries = true)
 		public ResponseEntity<?> remover(@PathVariable Long id){
 			Optional<Topico> optional = topicoRepository.findById(id);
 				if(optional.isPresent()) {
