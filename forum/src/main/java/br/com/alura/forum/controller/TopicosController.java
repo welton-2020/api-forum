@@ -46,7 +46,7 @@ public class TopicosController {
 	// PARA A UTILIZAÇÃO DO PAGEABLE AQUI DEVEMOS ATIVAR O MODULO @EnableSpringDataWebSupport NA CLASSE PRINCIPAL ForumApplication.java / @PageableDefault para deixar como padrão a busca caso não seja passado os parametros	*/
 	
 	@GetMapping
-	@Cacheable(value = "listaDeTopicos")
+	// @Cacheable(value = "listaDeTopicos")
 	public Page<TopicoDTO> listar (@RequestParam(required = false) String nomeCurso, 
 			@PageableDefault(sort="id", direction= Direction.DESC, page = 0, size = 10) Pageable paginacao ){
 	
@@ -66,7 +66,7 @@ public class TopicosController {
 	// CADASTRANDO UM NOVO TOPICO
 	@PostMapping
 	@Transactional
-	@CacheEvict(value = "listaDeTopicos", allEntries = true)	// @CACHEEVICT É UTILIZADO PARA INFORMAR AO SPRING INVALIDE OU LIMPE UM DETERMINADO CACHE 							
+//	@CacheEvict(value = "listaDeTopicos", allEntries = true)	// @CACHEEVICT É UTILIZADO PARA INFORMAR AO SPRING INVALIDE OU LIMPE UM DETERMINADO CACHE 							
 	public ResponseEntity<TopicoDTO> cadastrar(@RequestBody @Valid TopicoFom form, UriComponentsBuilder uriBuilder) {
 		Topico topico = form.converter(cursoRepository);
 		topicoRepository.save(topico);
@@ -91,7 +91,7 @@ public class TopicosController {
 	// ATUALIZANDO OS DADOS DO TOPICO
 		@PutMapping("/{id}")	
 		@Transactional        // -> uTILIZADO O @TRANSACTIONAL PARA O SPRING EFETUAR O UPDATE NO BANCO
-		@CacheEvict(value = "listaDeTopicos", allEntries = true)
+//		@CacheEvict(value = "listaDeTopicos", allEntries = true)
 		public ResponseEntity<TopicoDTO>  atualizar( @PathVariable Long id, @RequestBody @Valid  AtualizacaoTopicoForm  form) {
 			Optional<Topico> optional = topicoRepository.findById(id);
 			if(optional.isPresent()) {
@@ -106,7 +106,7 @@ public class TopicosController {
 		// DELETANDO OS DADOS DO TOPICO	
 		@DeleteMapping("/{id}")
 		@Transactional
-		@CacheEvict(value = "listaDeTopicos", allEntries = true)
+//		@CacheEvict(value = "listaDeTopicos", allEntries = true)
 		public ResponseEntity<?> remover(@PathVariable Long id){
 			Optional<Topico> optional = topicoRepository.findById(id);
 				if(optional.isPresent()) {
