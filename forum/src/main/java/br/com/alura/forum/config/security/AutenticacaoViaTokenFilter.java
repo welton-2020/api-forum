@@ -1,5 +1,9 @@
 package br.com.alura.forum.config.security;
 
+import br.com.alura.forum.modelo.Usuario;
+import br.com.alura.forum.repository.UsuarioRepository;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -11,8 +15,11 @@ import java.io.IOException;
 public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
 
     private TokenService tokenService;
-    public AutenticacaoViaTokenFilter(TokenService tokenService) {
+    private UsuarioRepository repository;
+
+    public AutenticacaoViaTokenFilter(TokenService tokenService,UsuarioRepository repository ) {
         this.tokenService = tokenService;
+        this.repository = repository;
     }
 
     @Override
@@ -20,9 +27,18 @@ public class AutenticacaoViaTokenFilter extends OncePerRequestFilter {
 
         String token = recuperarToken(request);
         boolean valido = tokenService.isTokenValido(token);
-        System.out.println(valido);
-        filterChain.doFilter(request,response);
+        if (valido){
+            autenticarCliente(token);
+        }
+            filterChain.doFilter(request,response);
+    }
 
+    // FORÇANDO A AUTENTICAÇÃO , AQUI ESTAMOS INFORMANDO PARA O SPRING AUTENTICAR CASO SEJA VALIDADO O TOKEN
+    private void autenticarCliente(String token) {
+        Long idUsuario = tokenService.getIdUsuario(token);
+        Usuario usuario = repository.findById(idUsuario).get();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario,null, usuario.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private String recuperarToken(HttpServletRequest request) {
